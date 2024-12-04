@@ -14,35 +14,6 @@ const isReportSafe = (report: number[]) => {
   );
 };
 
-// Performant part 2 attempt, alas
-// const isReportTolerablySafe = (report: number[]) => {
-//   const diffs: number[] = [];
-//   for (let i = 0; i < report.length - 1; i++) {
-//     diffs.push(report[i + 1] - report[i]);
-//   }
-
-//   const signs = diffs.map((num) => Math.sign(num));
-
-//   const signMap: Record<string, number> = {};
-//   signs.forEach((sign) =>
-//     signMap[sign] ? signMap[sign]++ : (signMap[sign] = 1)
-//   );
-
-//   console.log(signMap);
-
-//   if (Object.keys(signMap).length > 2) {
-//     return false;
-//   }
-
-//   if (Object.keys(signMap).filter((sign) => signMap[sign] > 1).length > 1) {
-//     return false;
-//   }
-
-//   // do something else here
-
-//   return true;
-// };
-
 const isReportTolerablySafeBruteForce = (report: number[]) => {
   for (let i = 0; i < report.length; i++) {
     const testReport = [...report];

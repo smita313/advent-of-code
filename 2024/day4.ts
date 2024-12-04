@@ -74,10 +74,14 @@ const isCrossMas = (currCol: number, currRow: number, lines: string[]) => {
     return false;
   }
 
-  const firstOption =
-    lines[currRow - 1][currCol - 1] + lines[currRow + 1][currCol + 1];
-  const secondOption =
-    lines[currRow - 1][currCol + 1] + lines[currRow + 1][currCol - 1];
+  const firstOption = [
+    lines[currRow - 1][currCol - 1],
+    lines[currRow + 1][currCol + 1],
+  ];
+  const secondOption = [
+    lines[currRow - 1][currCol + 1],
+    lines[currRow + 1][currCol - 1],
+  ];
 
   return (
     firstOption.includes("M") &&
