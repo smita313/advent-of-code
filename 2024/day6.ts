@@ -9,11 +9,7 @@ const traversalDirections: Direction[] = [
   { X: -1, Y: 0 },
 ];
 
-const part1 = () => {
-  const fileStr = readFileSync("./inputs/day6.txt").toString();
-
-  const grid = fileStr.split("\n");
-
+const getInitialPath = (grid: string[]) => {
   let currRow = grid.findIndex((row) => row.includes("^"));
   let currCol = grid[currRow].indexOf("^");
   let currDirectionIndex = 0;
@@ -39,7 +35,15 @@ const part1 = () => {
     }
   }
 
-  return traversed.size;
+  return traversed;
+};
+
+const part1 = () => {
+  const fileStr = readFileSync("./inputs/day6.txt").toString();
+
+  const grid = fileStr.split("\n");
+
+  return getInitialPath(grid).size;
 };
 
 const replaceAt = (str: string, index: number, replacement: string) => {
@@ -92,15 +96,21 @@ const part2 = () => {
 
   const grid = fileStr.split("\n");
 
+  const initialPath = Array.from(getInitialPath(grid).values()).map((coord) =>
+    coord.split(",").map((numStr) => parseInt(numStr))
+  );
+
   let total = 0;
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[i].length; j++) {
-      const newGrid = [...grid];
-      if (newGrid[i][j] == ".") {
-        newGrid[i] = replaceAt(newGrid[i], j, "#");
-        if (isInfiniteTraversal(newGrid)) {
-          total++;
-        }
+  for (let i = 1; i < initialPath.length; i++) {
+    const col = initialPath[i][0];
+    const row = initialPath[i][1];
+
+    const newGrid = [...grid];
+
+    if (newGrid[row][col] == ".") {
+      newGrid[row] = replaceAt(newGrid[row], col, "#");
+      if (isInfiniteTraversal(newGrid)) {
+        total++;
       }
     }
   }
