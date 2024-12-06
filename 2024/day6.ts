@@ -19,19 +19,21 @@ const part1 = () => {
   let currDirectionIndex = 0;
 
   let traversed = new Set<string>();
-  traversed.add(`${currCol},${currRow}`);
   while (
-    currRow + traversalDirections[currDirectionIndex].Y > -1 &&
-    currRow + traversalDirections[currDirectionIndex].Y < grid.length &&
-    currCol + traversalDirections[currDirectionIndex].X > -1 &&
-    currCol + traversalDirections[currDirectionIndex].X < grid[0].length
+    currRow > -1 &&
+    currRow < grid.length &&
+    currCol > -1 &&
+    currCol < grid[0].length
   ) {
+    traversed.add(`${currCol},${currRow}`);
+
     const currDirection = traversalDirections[currDirectionIndex];
-    if (grid[currRow + currDirection.Y][currCol + currDirection.X] != "#") {
+
+    if (
+      grid.at(currRow + currDirection.Y)?.at(currCol + currDirection.X) != "#"
+    ) {
       currRow += currDirection.Y;
       currCol += currDirection.X;
-
-      traversed.add(`${currCol},${currRow}`);
     } else {
       currDirectionIndex = (currDirectionIndex + 1) % 4;
     }
