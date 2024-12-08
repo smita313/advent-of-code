@@ -1,6 +1,5 @@
 import { readFileSync } from "fs";
-
-type Direction = { X: number; Y: number };
+import { Direction, isValidCoord } from "./utils";
 
 const directions = [
   { X: -1, Y: -1 },
@@ -29,12 +28,7 @@ const searchInDirection = (
   }
 
   // Out of range
-  if (
-    currCol + direction.X < 0 ||
-    currCol + direction.X >= lines[currRow].length ||
-    currRow + direction.Y < 0 ||
-    currRow + direction.Y >= lines.length
-  ) {
+  if (!isValidCoord(lines, currRow + direction.Y, currCol + direction.X)) {
     return false;
   }
 

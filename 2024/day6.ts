@@ -1,6 +1,5 @@
 import { readFileSync } from "fs";
-
-type Direction = { X: number; Y: number };
+import { Direction, isValidCoord } from "./utils";
 
 const traversalDirections: Direction[] = [
   { X: 0, Y: -1 },
@@ -15,12 +14,7 @@ const getInitialPath = (grid: string[]) => {
   let currDirectionIndex = 0;
 
   let traversed = new Set<string>();
-  while (
-    currRow > -1 &&
-    currRow < grid.length &&
-    currCol > -1 &&
-    currCol < grid[0].length
-  ) {
+  while (isValidCoord(grid, currRow, currCol)) {
     traversed.add(`${currCol},${currRow}`);
 
     const currDirection = traversalDirections[currDirectionIndex];
@@ -60,12 +54,7 @@ const isInfiniteTraversal = (grid: string[]) => {
   let currDirectionIndex = 0;
 
   let traversed: string[] = [];
-  while (
-    currRow > -1 &&
-    currRow < grid.length &&
-    currCol > -1 &&
-    currCol < grid[0].length
-  ) {
+  while (isValidCoord(grid, currRow, currCol)) {
     const entry = `${currCol},${currRow},${currDirectionIndex}`;
 
     if (traversed.includes(entry)) {
