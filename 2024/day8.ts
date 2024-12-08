@@ -10,28 +10,73 @@ const findAntinodes = (grid: string[], row: number, col: number) => {
         const rowDiff = currRow - row;
         const colDiff = currCol - col;
 
-        const an1Row = row - rowDiff;
-        const an1Col = col - colDiff;
+        const beforeRow = row - rowDiff;
+        const beforeCol = col - colDiff;
 
-        const an2Row = currRow + rowDiff;
-        const a2Col = currCol + colDiff;
+        const afterRow = currRow + rowDiff;
+        const afterCol = currCol + colDiff;
 
         if (
-          an1Row >= 0 &&
-          an1Row < grid.length &&
-          an1Col >= 0 &&
-          an1Col < grid[0].length
+          beforeRow >= 0 &&
+          beforeRow < grid.length &&
+          beforeCol >= 0 &&
+          beforeCol < grid[0].length
         ) {
-          antinodes.push(`${an1Row},${an1Col}`);
+          antinodes.push(`${beforeRow},${beforeCol}`);
         }
 
         if (
-          an2Row >= 0 &&
-          an2Row < grid.length &&
-          a2Col >= 0 &&
-          a2Col < grid[0].length
+          afterRow >= 0 &&
+          afterRow < grid.length &&
+          afterCol >= 0 &&
+          afterCol < grid[0].length
         ) {
-          antinodes.push(`${an2Row},${a2Col}`);
+          antinodes.push(`${afterRow},${afterCol}`);
+        }
+      }
+    }
+  }
+
+  return antinodes;
+};
+
+const findResonantAntinodes = (grid: string[], row: number, col: number) => {
+  const antenna = grid[row][col];
+
+  const antinodes: string[] = [];
+  for (let currRow = row + 1; currRow < grid.length; currRow++) {
+    for (let currCol = 0; currCol < grid[currRow].length; currCol++) {
+      if (grid[currRow][currCol] == antenna) {
+        antinodes.push(`${row},${col}`);
+        antinodes.push(`${currRow},${currCol}`);
+
+        const rowDiff = currRow - row;
+        const colDiff = currCol - col;
+
+        let beforeNodeRow = row - rowDiff;
+        let beforeNodeCol = col - colDiff;
+        while (
+          beforeNodeRow >= 0 &&
+          beforeNodeRow < grid.length &&
+          beforeNodeCol >= 0 &&
+          beforeNodeCol < grid[0].length
+        ) {
+          antinodes.push(`${beforeNodeRow},${beforeNodeCol}`);
+          beforeNodeRow -= rowDiff;
+          beforeNodeCol -= colDiff;
+        }
+
+        let afterNodeRow = currRow + rowDiff;
+        let afterNodeCol = currCol + colDiff;
+        while (
+          afterNodeRow >= 0 &&
+          afterNodeRow < grid.length &&
+          afterNodeCol >= 0 &&
+          afterNodeCol < grid[0].length
+        ) {
+          antinodes.push(`${afterNodeRow},${afterNodeCol}`);
+          afterNodeRow += rowDiff;
+          afterNodeCol += colDiff;
         }
       }
     }
@@ -59,4 +104,24 @@ const part1 = () => {
   return antinodes.size;
 };
 
-console.log("Part 1: " + part1());
+const part2 = () => {
+  const fileStr = readFileSync("./inputs/day8.txt").toString();
+
+  const grid = fileStr.split("\n").filter((str) => str);
+
+  const antinodes = new Set<string>();
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      if (grid[row][col] != ".") {
+        findResonantAntinodes(grid, row, col).map((antinodeStr) =>
+          antinodes.add(antinodeStr)
+        );
+      }
+    }
+  }
+
+  return antinodes.size;
+};
+
+console.log("Part 1: " + part1()); // 413
+console.log("Part 2: " + part2()); // 1417
