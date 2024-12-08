@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+import { isValidCoord } from "./utils";
 
 const findAntinodes = (grid: string[], row: number, col: number) => {
   const antenna = grid[row][col];
@@ -16,21 +17,11 @@ const findAntinodes = (grid: string[], row: number, col: number) => {
         const afterRow = currRow + rowDiff;
         const afterCol = currCol + colDiff;
 
-        if (
-          beforeRow >= 0 &&
-          beforeRow < grid.length &&
-          beforeCol >= 0 &&
-          beforeCol < grid[0].length
-        ) {
+        if (isValidCoord(grid, beforeRow, beforeCol)) {
           antinodes.push(`${beforeRow},${beforeCol}`);
         }
 
-        if (
-          afterRow >= 0 &&
-          afterRow < grid.length &&
-          afterCol >= 0 &&
-          afterCol < grid[0].length
-        ) {
+        if (isValidCoord(grid, afterRow, afterCol)) {
           antinodes.push(`${afterRow},${afterCol}`);
         }
       }
@@ -55,12 +46,7 @@ const findResonantAntinodes = (grid: string[], row: number, col: number) => {
 
         let beforeNodeRow = row - rowDiff;
         let beforeNodeCol = col - colDiff;
-        while (
-          beforeNodeRow >= 0 &&
-          beforeNodeRow < grid.length &&
-          beforeNodeCol >= 0 &&
-          beforeNodeCol < grid[0].length
-        ) {
+        while (isValidCoord(grid, beforeNodeRow, beforeNodeCol)) {
           antinodes.push(`${beforeNodeRow},${beforeNodeCol}`);
           beforeNodeRow -= rowDiff;
           beforeNodeCol -= colDiff;
@@ -68,12 +54,7 @@ const findResonantAntinodes = (grid: string[], row: number, col: number) => {
 
         let afterNodeRow = currRow + rowDiff;
         let afterNodeCol = currCol + colDiff;
-        while (
-          afterNodeRow >= 0 &&
-          afterNodeRow < grid.length &&
-          afterNodeCol >= 0 &&
-          afterNodeCol < grid[0].length
-        ) {
+        while (isValidCoord(grid, afterNodeRow, afterNodeCol)) {
           antinodes.push(`${afterNodeRow},${afterNodeCol}`);
           afterNodeRow += rowDiff;
           afterNodeCol += colDiff;
