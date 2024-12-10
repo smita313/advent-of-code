@@ -11,3 +11,12 @@ export const isValidCoord = (
 export const isValidIndex = (arr: any[] | string, index: number) => {
   return index >= 0 && index < arr.length;
 };
+
+export const checkGridElement = (
+  grid: any[][] | string[],
+  testValue: any,
+  row: number,
+  col: number
+) => {
+  return isValidCoord(grid, row, col) && grid[row][col] == testValue;
+};
