@@ -1,4 +1,5 @@
 export type Direction = { X: number; Y: number };
+export type Coord = Direction;
 
 export const isValidCoord = (
   grid: any[][] | string[],
