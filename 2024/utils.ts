@@ -1,6 +1,10 @@
 export type Direction = { X: number; Y: number };
 export type Coord = Direction;
 
+export const coordEquals = (a: Coord, b: Coord) => {
+  return a.X == b.X && a.Y == b.Y;
+};
+
 export const isValidCoord = (
   grid: any[][] | string[],
   row: number,

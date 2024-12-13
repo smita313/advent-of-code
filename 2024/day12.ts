@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { Coord, Direction } from "./utils";
+import { Coord, coordEquals, Direction } from "./utils";
 
 const searchDirections: Direction[] = [
   { X: 0, Y: -1 },
@@ -72,6 +72,49 @@ const calculatePerimeter = (region: Coord[]) => {
   return total;
 };
 
+const countCorners = (region: Coord[], point: Coord) => {
+  const dirs = [-1, 1];
+
+  let total = 0;
+  for (let y = 0; y < dirs.length; y++) {
+    for (let x = 0; x < dirs.length; x++) {
+      if (
+        !region.some((r) =>
+          coordEquals(r, { X: point.X + dirs[x], Y: point.Y })
+        ) &&
+        !region.some((r) =>
+          coordEquals(r, { X: point.X, Y: point.Y + dirs[y] })
+        )
+      ) {
+        total++;
+      }
+
+      if (
+        region.some((r) =>
+          coordEquals(r, { X: point.X + dirs[x], Y: point.Y })
+        ) &&
+        region.some((r) =>
+          coordEquals(r, { X: point.X, Y: point.Y + dirs[y] })
+        ) &&
+        !region.some((r) =>
+          coordEquals(r, { X: point.X + dirs[x], Y: point.Y + dirs[y] })
+        )
+      ) {
+        total++;
+      }
+    }
+  }
+
+  return total;
+};
+
+const calculateCorners = (region: Coord[]) => {
+  return region.reduce(
+    (sum, current) => sum + countCorners(region, current),
+    0
+  );
+};
+
 const part1 = () => {
   const inputStr = readFileSync("./inputs/day12.txt").toString().trim();
 
@@ -84,10 +127,17 @@ const part1 = () => {
   }, 0);
 };
 
-const p1Start = performance.now();
+const part2 = () => {
+  const inputStr = readFileSync("./inputs/day12.txt").toString().trim();
+
+  const regionMap = inputStr.split("\n").map((row) => row.trim().split(""));
+
+  const discoveredRegions = findRegions(regionMap);
+
+  return Object.values(discoveredRegions).reduce((sum, current) => {
+    return sum + calculateCorners(current) * current.length;
+  }, 0);
+};
 
 console.log("Part 1: " + part1()); // 1451030
-
-const p1End = performance.now();
-
-console.log(`Part 1 took ${p1End - p1Start} ms`);
+console.log("Part 2: " + part2()); // 859494
