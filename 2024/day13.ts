@@ -7,10 +7,8 @@ type Machine = {
   Prize: Coord;
 };
 
-const part1 = () => {
-  const inputStr = readFileSync("./inputs/day13.txt").toString().trim();
-
-  const machines: Machine[] = inputStr.split("\n\n").map((machineStr) => {
+const parseInput = (inputStr: string, offset: number): Machine[] => {
+  return inputStr.split("\n\n").map((machineStr) => {
     const machineInfoArr = machineStr.split("\n");
     const numberRegex = /\d+/g;
     const aMatches = machineInfoArr[0].match(numberRegex);
@@ -20,20 +18,34 @@ const part1 = () => {
     return {
       ButtonA: { X: Number(aMatches?.at(0)), Y: Number(aMatches?.at(1)) },
       ButtonB: { X: Number(bMatches?.at(0)), Y: Number(bMatches?.at(1)) },
-      Prize: { X: Number(prizeMatches?.at(0)), Y: Number(prizeMatches?.at(1)) },
+      Prize: {
+        X: Number(prizeMatches?.at(0)) + offset,
+        Y: Number(prizeMatches?.at(1)) + offset,
+      },
     };
   });
+};
+
+const solve = (machine: Machine) => {
+  const { ButtonA, ButtonB, Prize } = machine;
+
+  const aPress =
+    (ButtonB.X * Prize.Y - ButtonB.Y * Prize.X) /
+    (ButtonB.X * ButtonA.Y - ButtonB.Y * ButtonA.X);
+
+  const bPress = (Prize.X - ButtonA.X * aPress) / ButtonB.X;
+
+  return { aPress, bPress };
+};
+
+const part1 = () => {
+  const inputStr = readFileSync("./inputs/day13.txt").toString().trim();
+
+  const machines = parseInput(inputStr, 0);
 
   return machines
     .map((machine) => {
-      const aPress =
-        (machine.ButtonB.X * machine.Prize.Y -
-          machine.ButtonB.Y * machine.Prize.X) /
-        (machine.ButtonB.X * machine.ButtonA.Y -
-          machine.ButtonB.Y * machine.ButtonA.X);
-
-      const bPress =
-        (machine.Prize.X - machine.ButtonA.X * aPress) / machine.ButtonB.X;
+      const { aPress, bPress } = solve(machine);
 
       if (
         Number.isInteger(aPress) &&
@@ -54,33 +66,11 @@ const part1 = () => {
 const part2 = () => {
   const inputStr = readFileSync("./inputs/day13.txt").toString().trim();
 
-  const machines: Machine[] = inputStr.split("\n\n").map((machineStr) => {
-    const machineInfoArr = machineStr.split("\n");
-    const numberRegex = /\d+/g;
-    const aMatches = machineInfoArr[0].match(numberRegex);
-    const bMatches = machineInfoArr[1].match(numberRegex);
-    const prizeMatches = machineInfoArr[2].match(numberRegex);
-
-    return {
-      ButtonA: { X: Number(aMatches?.at(0)), Y: Number(aMatches?.at(1)) },
-      ButtonB: { X: Number(bMatches?.at(0)), Y: Number(bMatches?.at(1)) },
-      Prize: {
-        X: Number(prizeMatches?.at(0)) + 10000000000000,
-        Y: Number(prizeMatches?.at(1)) + 10000000000000,
-      },
-    };
-  });
+  const machines = parseInput(inputStr, 10000000000000);
 
   return machines
     .map((machine) => {
-      const aPress =
-        (machine.ButtonB.X * machine.Prize.Y -
-          machine.ButtonB.Y * machine.Prize.X) /
-        (machine.ButtonB.X * machine.ButtonA.Y -
-          machine.ButtonB.Y * machine.ButtonA.X);
-
-      const bPress =
-        (machine.Prize.X - machine.ButtonA.X * aPress) / machine.ButtonB.X;
+      const { aPress, bPress } = solve(machine);
 
       if (
         Number.isInteger(aPress) &&
