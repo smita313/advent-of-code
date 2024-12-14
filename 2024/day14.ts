@@ -11,33 +11,32 @@ const bottomLeft = "bottomLeft";
 const width = 101;
 const height = 103;
 
-const quadrantPartition = (positions: Coord[]): Record<string, number> => {
-  const quadrants: Record<string, number> = {};
-  quadrants[topLeft] = 0;
-  quadrants[topRight] = 0;
-  quadrants[bottomRight] = 0;
-  quadrants[bottomLeft] = 0;
+const getSafetyScore = (positions: Coord[]): number => {
+  let topLeft = 0;
+  let topRight = 0;
+  let bottomRight = 0;
+  let bottomLeft = 0;
 
-  Object.entries(positions).forEach(([, position]) => {
+  positions.forEach((position) => {
     if (position.X < Math.floor(width / 2)) {
       if (position.Y < Math.floor(height / 2)) {
-        quadrants[topLeft]++;
+        topLeft++;
       }
       if (position.Y > Math.floor(height / 2)) {
-        quadrants[bottomLeft]++;
+        bottomLeft++;
       }
     }
     if (position.X > Math.floor(width / 2)) {
       if (position.Y < Math.floor(height / 2)) {
-        quadrants[topRight]++;
+        topRight++;
       }
       if (position.Y > Math.floor(height / 2)) {
-        quadrants[bottomRight]++;
+        bottomRight++;
       }
     }
   });
 
-  return quadrants;
+  return topLeft * topRight * bottomRight * bottomLeft;
 };
 
 const part1 = () => {
@@ -51,9 +50,7 @@ const part1 = () => {
     };
   });
 
-  const positions: Coord[] = [];
-
-  robots.forEach((r) => positions.push(r.InitialPosition));
+  const positions = robots.map((r) => r.InitialPosition);
 
   for (let i = 0; i < 100; i++) {
     for (let r = 0; r < robots.length; r++) {
@@ -68,14 +65,47 @@ const part1 = () => {
     }
   }
 
-  const quadrants = quadrantPartition(positions);
+  return getSafetyScore(positions);
+};
 
-  return (
-    quadrants[topLeft] *
-    quadrants[topRight] *
-    quadrants[bottomRight] *
-    quadrants[bottomLeft]
-  );
+const part2 = () => {
+  const inputStr = readFileSync("./inputs/day14.txt").toString().trim();
+
+  const robots: Robot[] = inputStr.split("\n").map((str) => {
+    const matches = str.match(/-?\d+/g);
+    return {
+      InitialPosition: { X: Number(matches?.at(0)), Y: Number(matches?.at(1)) },
+      Velocity: { X: Number(matches?.at(2)), Y: Number(matches?.at(3)) },
+    };
+  });
+
+  const positions = robots.map((r) => r.InitialPosition);
+
+  let lowestSafetyScore = getSafetyScore(positions);
+  let treeSec = 0;
+
+  for (let i = 1; i < 10000; i++) {
+    for (let r = 0; r < robots.length; r++) {
+      const robot = robots[r];
+      const newX = positions[r].X + robot.Velocity.X;
+      const newY = positions[r].Y + robot.Velocity.Y;
+
+      positions[r] = {
+        X: newX - width * Math.floor(newX / width),
+        Y: newY - height * Math.floor(newY / height),
+      };
+    }
+
+    const safetyScore = getSafetyScore(positions);
+    if (safetyScore < lowestSafetyScore) {
+      lowestSafetyScore = safetyScore;
+      treeSec = i;
+    }
+  }
+
+  return treeSec;
 };
 
 console.log("Part 1: " + part1()); // 218965032
+
+console.log("Part 2: " + part2()); // 7037
