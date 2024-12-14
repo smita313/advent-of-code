@@ -3,11 +3,6 @@ import { Coord, Direction } from "./utils";
 
 type Robot = { InitialPosition: Coord; Velocity: Direction };
 
-const topLeft = "topLeft";
-const topRight = "topRight";
-const bottomRight = "bottomRight";
-const bottomLeft = "bottomLeft";
-
 const width = 101;
 const height = 103;
 
@@ -50,20 +45,15 @@ const part1 = () => {
     };
   });
 
-  const positions = robots.map((r) => r.InitialPosition);
+  const positions: Coord[] = robots.map((r) => {
+    const newX = r.InitialPosition.X + 100 * r.Velocity.X;
+    const newY = r.InitialPosition.Y + 100 * r.Velocity.Y;
 
-  for (let i = 0; i < 100; i++) {
-    for (let r = 0; r < robots.length; r++) {
-      const robot = robots[r];
-      const newX = positions[r].X + robot.Velocity.X;
-      const newY = positions[r].Y + robot.Velocity.Y;
-
-      positions[r] = {
-        X: newX - width * Math.floor(newX / width),
-        Y: newY - height * Math.floor(newY / height),
-      };
-    }
-  }
+    return {
+      X: newX - width * Math.floor(newX / width),
+      Y: newY - height * Math.floor(newY / height),
+    };
+  });
 
   return getSafetyScore(positions);
 };
